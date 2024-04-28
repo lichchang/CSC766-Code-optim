@@ -73,16 +73,18 @@ double t_start, t_end;
 
 //example1
 double example1(){
-  for (int i=0; i<m; i++){
-    for (int j=0; j < m; j++){
-      for (int k=0; k < n; k++){
-        for (int l=0; l < n; l++){
-          r[i][k] +=  x[i][l] * y[l][j] * s[j][k];
+  for (int i = 0; i < m; i++) {
+    for (int k = 0; k < n; k++) {
+        for (int j = 0; j < m; j++) {
+            double temp = 0;
+            for (int l = 0; l < n; l++) {
+                temp += x[i][l] * y[l][j];
+            }
+            r[i][k] += temp * s[j][k];
         }
-      }
     }
-  }
-  return r[m-1][n-1];
+}
+return r[m-1][n-1];
 }
 
 int main()

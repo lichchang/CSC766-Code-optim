@@ -56,7 +56,7 @@ double t_start, t_end;
 int main()
 {
   int i, j, k;
-  register double s;
+  double s;
 
   init_array();
 
@@ -68,13 +68,16 @@ int main()
   IF_TIME(t_start = rtclock());
 
   #pragma scop
-  for(int inter = 0; inter < iter; inter++){  
-    for (i=0; i<N; i++) {
-      for (j=0; j<=i; j++) {
-	a[i] += b[i]*c[j];
-      }
+  for (int inter = 0; inter < iter; inter++) {
+    for (int i = 0; i < N; i++) {
+        double temp = 0;
+        for (int j = 0; j <= i; j++) {
+            temp += c[j];
+        }
+        a[i] += b[i] * temp;
     }
-  }
+}
+
   #pragma endscop
   double rst_org = a[N-1];
   

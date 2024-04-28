@@ -74,36 +74,41 @@ double t_start, t_end;
 
 
 //example4
-void example4(){
-  for(int k = 2; k < zn-1; k++){
-    double zi = ((double)(k-1))/zn;
-    for(int j = 2; j < yn-1; j++){
-      double yi = ((double)(j-1))/yn;
-      for(int i = 2; i < xn-1; i++){
-        double xi = ((double)(i-1))/xn;
-        for(int m = 0; m < 6; m++){
-          d[m][i] =   c[m][2] * xi \
-                      + c[m][3] * yi \
-                      + c[m][4] * zi \
-                      + c[m][5] * xi * xi \
-                      + c[m][6] * yi * yi \
-                      + c[m][7] * zi * zi\
-                      + c[m][8] * xi * xi * xi \
-                      + c[m][9] * yi * yi * yi\
-                      + c[m][10]* zi * zi * zi \
-                      + c[m][11]* xi * xi * xi * xi   \
-                      + c[m][12]* yi * yi * yi * yi  \
-                      + c[m][13]* xi * yi * zi * zi;
-        }             
-        for(int m = 0; m < 6; m++){
-          u[m][i][j][k] += d[m][i];
-        } 
-      }
+double example4() {
+    for (int k = 2; k < zn-1; k++) {
+        double zi = ((double)(k-1))/zn;
+        double zi2 = zi * zi;
+        double zi3 = zi2 * zi;
+        for (int j = 2; j < yn-1; j++) {
+            double yi = ((double)(j-1))/yn;
+            double yi2 = yi * yi;
+            double yi3 = yi2 * yi;
+            for (int i = 2; i < xn-1; i++) {
+                double xi = ((double)(i-1))/xn;
+                double xi2 = xi * xi;
+                double xi3 = xi2 * xi;
+                for (int m = 0; m < 6; m++) {
+                    d[m][i] =   c[m][2] * xi
+                                + c[m][3] * yi
+                                + c[m][4] * zi
+                                + c[m][5] * xi2
+                                + c[m][6] * yi2
+                                + c[m][7] * zi2
+                                + c[m][8] * xi3
+                                + c[m][9] * yi3
+                                + c[m][10] * zi3
+                                + c[m][11] * xi2 * xi2
+                                + c[m][12] * yi2 * yi2
+                                + c[m][13] * xi * yi * zi2;
+                }
+                for (int m = 0; m < 6; m++) {
+                    u[m][i][j][k] += d[m][i];
+                }
+            }
+        }
     }
-  }
-  return u[5][xn-2][yn-2][zn-2];
+    return u[5][xn-2][yn-2][zn-2];
 }
-
 
 int main()
 {

@@ -79,7 +79,7 @@ double t_start, t_end;
 
 int main()
 {
-  register double s;
+  double s;
 
   init_array();
 
@@ -89,16 +89,22 @@ int main()
   IF_TIME(t_start = rtclock());
 
 #pragma scop
-  int a, b, c, e, i, j, k, m;
-  for(a=0;a<V;a++)
-    for(b=0;b<V;b++)
-      for(c=0;c<V;c++)
-        for(i=0;i<O;i++)
-          for(j=0;j<O;j++)
-            for(k=0;k<O;k++)
-              for(e=0;e<V;e++)
-                for(m=0;m<O;m++)
-                  X[a][b][c][i][j][k] += T2[a][b][k][m]*O1[c][m][i][j] + T2[c][e][i][j]*O2[a][b][e][k];           
+int a, b, c, e, i, j, k, m;
+for (a = 0; a < V; a++)
+  for (b = 0; b < V; b++)
+    for (c = 0; c < V; c++)
+      for (i = 0; i < O; i++)
+        for (j = 0; j < O; j++)
+          for (k = 0; k < O; k++) {
+            double sum1 = 0;
+            for (m = 0; m < O; m++)
+              sum1 += T2[a][b][k][m] * O1[c][m][i][j];
+            for (e = 0; e < V; e++) {
+              double product2 = T2[c][e][i][j] * O2[a][b][e][k];
+              X[a][b][c][i][j][k] += sum1 + product2;
+            }
+          }
+    
 #pragma endscop
 
   IF_TIME(t_end = rtclock());

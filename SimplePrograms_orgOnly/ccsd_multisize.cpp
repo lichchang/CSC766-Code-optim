@@ -23,35 +23,39 @@ double O2[V][V][V][O];
 
 void init_array()
 {
-  int a, b, c, e, i, j, k, m;
+    int a, b, c, e, i, j, k, m;
 
-  for(a=0;a<V;a++)
-    for(b=0;b<V;b++)
-      for(c=0;c<V;c++)
-        for(i=0;i<O;i++)
-          for(j=0;j<O;j++)
-            for(k=0;k<O;k++)
-              X[a][b][c][i][j][k] = a*b*c/((i+1)*(j+1)*(k+1));
+    // Precompute inverses for frequently used divisors
+    double invO[O];
+    for(i = 0; i < O; i++) invO[i] = 1.0 / (i + 1);
 
+    for(a = 0; a < V; a++)
+        for(b = 0; b < V; b++)
+            for(c = 0; c < V; c++)
+                for(i = 0; i < O; i++)
+                    for(j = 0; j < O; j++)
+                        for(k = 0; k < O; k++)
+                            X[a][b][c][i][j][k] = a * b * c * invO[i] * invO[j] * invO[k];
 
-  for(a=0;a<V;a++)
-    for(b=0;b<V;b++)
-      for(k=0;k<O;k++)
-        for(m=0;m<O;m++)
-          T2[a][b][k][m] = a*b/((m+1)*(k+1));
+    for(a = 0; a < V; a++)
+        for(b = 0; b < V; b++)
+            for(k = 0; k < O; k++)
+                for(m = 0; m < O; m++)
+                    T2[a][b][k][m] = a * b * invO[m] * invO[k];
 
-  for(c=0;c<V;c++)
-    for(m=0;m<O;m++)
-      for(i=0;i<O;i++)
-        for(j=0;j<O;j++)
-          O1[c][m][i][j] = c*m/((i+1)*(j+1));
+    for(c = 0; c < V; c++)
+        for(m = 0; m < O; m++)
+            for(i = 0; i < O; i++)
+                for(j = 0; j < O; j++)
+                    O1[c][m][i][j] = c * m * invO[i] * invO[j];
 
-  for(a=0;a<V;a++)
-    for(b=0;b<V;b++)
-      for(e=0;e<V;e++)
-        for(k=0;k<O;k++)
-          O2[a][b][e][k] = a*b/((e+1)*(k+1));
+    for(a = 0; a < V; a++)
+        for(b = 0; b < V; b++)
+            for(e = 0; e < V; e++)
+                for(k = 0; k < O; k++)
+                    O2[a][b][e][k] = a * b * invO[e] * invO[k];
 }
+
 
 
 void print_array()
@@ -79,7 +83,7 @@ double t_start, t_end;
 
 int main()
 {
-  register double s;
+  double s;
 
   init_array();
 
@@ -89,16 +93,20 @@ int main()
   IF_TIME(t_start = rtclock());
 
 #pragma scop
-  int a, b, c, e, i, j, k, m;
-  for(a=0;a<V;a++)
-    for(b=0;b<V;b++)
-      for(c=0;c<V;c++)
-        for(i=0;i<O;i++)
-          for(j=0;j<O;j++)
-            for(k=0;k<O;k++)
-              for(e=0;e<V;e++)
-                for(m=0;m<1000;m++) //checkhere
-                  X[a][b][c][i][j][k] += T2[c][e][i][j]*O2[a][b][e][k];           
+int a, b, c, e, i, j, k;
+for (a = 0; a < V; a++)
+  for (b = 0; b < V; b++)
+    for (c = 0; c < V; c++)
+      for (i = 0; i < O; i++)
+        for (j = 0; j < O; j++)
+          for (k = 0; k < O; k++) {
+            for (e = 0; e < V; e++) {
+              double temp = T2[c][e][i][j] * O2[a][b][e][k];
+              for (int m = 0; m < 1000; m++) // This inner loop might be redundant
+                X[a][b][c][i][j][k] += temp;
+            }
+          }
+ 
 #pragma endscop
   
   IF_TIME(t_end = rtclock());

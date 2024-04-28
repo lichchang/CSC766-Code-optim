@@ -46,11 +46,11 @@ void init_array()
 {
   int i, j;
 
-  for (i=0; i<m; i++) {
-    a[i] = 1/i;
+  for (i=1; i<m; i++) {
+    a[i-1] = 1/i;
   }
-  for (i=0; i<m; i++) {
-    b[i] = 1/i;
+  for (i=1; i<m; i++) {
+    b[i-1] = 1/i;
   }
 }
 
@@ -81,17 +81,15 @@ double example2() {
     }
 
     while (true) {
-        // Calculate 'd' starting with precomputed sum of 'a'
         d = a_sum;
         for (int i = 0; i < m; i++) {
             d += b[i] * w;
         }
 
-        iteration++;
-        if (iteration >= NOiteration) break;
-        // if(d < 0.0001) break;
-        w = w + r * d;
-    }
+    iteration++;
+    if (iteration >= NOiteration || abs(d) < 0.0001) break; // Early exit condition based on 'd'
+    w = w + r * d;
+}
     return w;
 }
 
